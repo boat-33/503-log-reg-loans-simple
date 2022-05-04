@@ -47,6 +47,16 @@ app.layout = html.Div(children=[
                 dcc.Input(id='ApplicantIncome', value=5000, type='number', min=0, max=100000, step=500),
                 html.Div('Probability Threshold for Loan Approval'),
                 dcc.Input(id='Threshold', value=50, type='number', min=0, max=100, step=1),
+                html.Div('Property_Area'),
+                dcc.RadioItems(
+                    id='Property_Area',
+                    options=[
+                        {'label': 'Urban', 'value': 1},
+                        {'label': 'Semiurban', 'value': 2},
+                        {'label': 'Rural', 'value': 3},
+                    ],
+                    value='Urban'
+                    ),
 
             ], className='three columns'),
             html.Div([
@@ -82,11 +92,12 @@ app.layout = html.Div(children=[
      Input(component_id='LoanAmount', component_property='value'),
      Input(component_id='Loan_Amount_Term', component_property='value'),
      Input(component_id='ApplicantIncome', component_property='value'),
-     Input(component_id='Threshold', component_property='value')
+     Input(component_id='Threshold', component_property='value'),
+     Input(component_id='Property_Area', component_property='value')
     ])
-def prediction_function(Credit_History, LoanAmount, Loan_Amount_Term, ApplicantIncome, Threshold):
+def prediction_function(Credit_History, LoanAmount, Loan_Amount_Term, ApplicantIncome, Threshold, Property_Area):
     try:
-        data = [[Credit_History, LoanAmount, Loan_Amount_Term, ApplicantIncome]]
+        data = [[Credit_History, LoanAmount, Loan_Amount_Term, ApplicantIncome, Property_Area]]
         rawprob=100*unpickled_model.predict_proba(data)[0][1]
         func = lambda y: 'Approved' if int(rawprob)>Threshold else 'Denied'
         formatted_y = func(rawprob)
@@ -96,7 +107,7 @@ def prediction_function(Credit_History, LoanAmount, Loan_Amount_Term, ApplicantI
         formatted_app_prob = "{:,.2f}%".format(app_prob)
         return formatted_y, formatted_app_prob, formatted_deny_prob
     except:
-        return "inadequate inputs", "inadequate inputs"
+        return "inadequate inputs", "inadequate inputs", "inadequate inputs"
 
 
 
